@@ -1,7 +1,14 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDown, FileText } from "lucide-react";
+import {
+  ArrowDownRight,
+  FileText,
+  Headphones,
+  MonitorCog,
+  Network,
+  Wrench,
+} from "lucide-react";
 
 type HeroSceneProps = {
   onOpenCV: () => void;
@@ -9,10 +16,11 @@ type HeroSceneProps = {
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-const titleLines = [
-  "Teknik merakımı",
-  "profesyonel bir kariyere",
-  "dönüştürüyorum.",
+const focusItems = [
+  { label: "Donanım", icon: Wrench },
+  { label: "Kullanıcı desteği", icon: Headphones },
+  { label: "Ağ ve bağlantı", icon: Network },
+  { label: "Teknik operasyon", icon: MonitorCog },
 ] as const;
 
 export default function HeroScene({ onOpenCV }: HeroSceneProps) {
@@ -21,143 +29,266 @@ export default function HeroScene({ onOpenCV }: HeroSceneProps) {
   const reveal = (delay: number) => ({
     initial: shouldReduceMotion
       ? { opacity: 1, y: 0 }
-      : { opacity: 0, y: 28 },
+      : { opacity: 0, y: 22 },
     animate: { opacity: 1, y: 0 },
     transition: shouldReduceMotion
       ? { duration: 0 }
-      : { duration: 0.72, delay, ease },
+      : { duration: 0.7, delay, ease },
   });
 
   return (
-    <section
-      aria-labelledby="hero-title"
-      style={{
-        minHeight: "100svh",
-        display: "flex",
-        alignItems: "center",
-        position: "relative",
-        overflow: "hidden",
-        paddingTop: "clamp(6.5rem, 12vh, 9rem)",
-        paddingBottom: "clamp(4rem, 9vh, 7rem)",
-      }}
-    >
-      <div
-        className="site-wrap"
-        style={{
-          width: "100%",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "min(100%, 78rem)",
-          }}
-        >
-          <motion.p
-            className="t-label"
-            {...reveal(0.08)}
-            style={{
-              marginBottom: "clamp(1.75rem, 4vw, 3.25rem)",
-              color: "var(--ink-3)",
-            }}
+    <section className="hero-apple" aria-labelledby="hero-title">
+      <div className="site-wrap">
+        <div className="hero-apple__grid">
+          <motion.article
+            className="apple-card hero-apple__main"
+            {...reveal(0.06)}
           >
-            KİŞİSEL PORTFOLYO · 2026
-          </motion.p>
+            <div>
+              <p className="card-eyebrow">IT SUPPORT · İSTANBUL</p>
 
-          <h1
-            id="hero-title"
-            className="t-hero"
-            style={{
-              maxWidth: "13ch",
-              textWrap: "balance",
-            }}
-          >
-            {titleLines.map((line, index) => (
-              <span
-                key={line}
-                className="clip"
-                style={{
-                  display: "block",
-                  paddingBottom: "0.07em",
-                }}
-              >
-                <motion.span
-                  {...reveal(0.18 + index * 0.1)}
-                  style={{
-                    display: "block",
-                  }}
+              <h1 id="hero-title" className="hero-apple__title">
+                Teknik sorunları çözen,
+                <span>süreçleri öğrenen ve sorumluluk alan biriyim.</span>
+              </h1>
+            </div>
+
+            <div className="hero-apple__bottom">
+              <p className="hero-apple__description">
+                Donanım, Windows, kullanıcı desteği ve dijital
+                operasyonlarda uygulamalı deneyime sahip bir IT Support
+                adayıyım.
+              </p>
+
+              <div className="hero-apple__actions">
+                <a href="#gelisim" className="btn-dark">
+                  Çalışmalarımı incele
+                  <ArrowDownRight size={16} aria-hidden="true" />
+                </a>
+
+                <button
+                  type="button"
+                  className="btn-ghost"
+                  onClick={onOpenCV}
                 >
-                  {line}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
+                  CV&apos;yi aç
+                  <FileText size={16} aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </motion.article>
 
-          <motion.div
-            {...reveal(0.56)}
-            style={{
-              marginTop: "clamp(2.25rem, 5vw, 4rem)",
-              maxWidth: "48rem",
-            }}
+          <motion.aside
+            className="apple-card apple-card--dark hero-apple__side"
+            {...reveal(0.16)}
           >
-            <p
-              className="t-body"
-              style={{
-                maxWidth: "54ch",
-                fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)",
-                lineHeight: 1.72,
-                color: "var(--ink-2)",
-              }}
-            >
-              Bilgisayar donanımı, teknik destek ve dijital operasyonlar
-              alanında uygulamalı deneyime sahip bir IT Support adayıyım.
-            </p>
+            <div>
+              <p className="card-eyebrow">ŞU ANDA ARADIĞIM ROL</p>
 
-            <p
-              className="t-label"
-              style={{
-                marginTop: "1.35rem",
-                color: "var(--ink-3)",
-                letterSpacing: "0.13em",
-              }}
-            >
-              İstanbul — IT Support — Teknik Operasyon
-            </p>
-          </motion.div>
+              <h2 className="hero-apple__side-title">
+                Bir ekibin içinde güvenilir teknik destek noktası olmak.
+              </h2>
 
-          <motion.div
-            {...reveal(0.68)}
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.75rem",
-              marginTop: "clamp(2rem, 4vw, 3rem)",
-            }}
-          >
-            <a
-              href="#hikayem"
-              id="hero-discover-btn"
-              className="btn-dark"
-              aria-label="Hikâyem bölümüne git"
-            >
-              Hikâyemi keşfet
-              <ArrowDown size={15} aria-hidden="true" />
-            </a>
+              <p className="card-copy">
+                Kullanıcılara yakın olduğum, işleyişi öğrenebildiğim ve
+                kurumun ihtiyaçlarıyla birlikte daha fazla sorumluluk
+                alabildiğim bir IT Support rolü arıyorum.
+              </p>
+            </div>
 
-            <button
-              type="button"
-              id="hero-cv-btn"
-              className="btn-ghost"
-              onClick={onOpenCV}
-              aria-label="Öz geçmişimi görüntüle"
-            >
-              CV&apos;yi görüntüle
-              <FileText size={15} aria-hidden="true" />
-            </button>
-          </motion.div>
+            <div className="hero-apple__focus-grid">
+              {focusItems.map(({ label, icon: Icon }) => (
+                <div key={label} className="hero-apple__focus">
+                  <span className="hero-apple__focus-icon">
+                    <Icon size={17} aria-hidden="true" />
+                  </span>
+                  <span>{label}</span>
+                </div>
+              ))}
+            </div>
+          </motion.aside>
         </div>
       </div>
+
+      <style jsx>{`
+        .hero-apple {
+          min-height: 100svh;
+          display: flex;
+          align-items: center;
+          padding-top: clamp(7.5rem, 14vh, 10rem);
+          padding-bottom: clamp(3.5rem, 8vh, 6rem);
+        }
+
+        .hero-apple__grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.42fr) minmax(320px, 0.58fr);
+          gap: var(--grid-gap);
+          align-items: stretch;
+        }
+
+        .hero-apple__main,
+        .hero-apple__side {
+          min-height: min(68vh, 670px);
+        }
+
+        .hero-apple__main {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 4rem;
+        }
+
+        .hero-apple__title {
+          max-width: 12ch;
+          margin-top: clamp(1.25rem, 2.8vw, 2.2rem);
+          color: var(--ink);
+          font-size: var(--f-hero);
+          font-weight: 850;
+          letter-spacing: -0.065em;
+          line-height: 0.93;
+          text-wrap: balance;
+        }
+
+        .hero-apple__title span {
+          display: block;
+          color: var(--ink-3);
+        }
+
+        .hero-apple__bottom {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 2rem;
+          align-items: end;
+        }
+
+        .hero-apple__description {
+          max-width: 48ch;
+          color: var(--ink-2);
+          font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+          line-height: 1.65;
+        }
+
+        .hero-apple__actions {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: 0.65rem;
+        }
+
+        .hero-apple__side {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 3rem;
+        }
+
+        .hero-apple__side-title {
+          max-width: 12ch;
+          margin-top: 1.2rem;
+          color: white;
+          font-size: clamp(2rem, 3.7vw, 3.7rem);
+          font-weight: 820;
+          letter-spacing: -0.055em;
+          line-height: 0.98;
+          text-wrap: balance;
+        }
+
+        .hero-apple__focus-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.65rem;
+        }
+
+        .hero-apple__focus {
+          min-height: 84px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 1rem;
+          padding: 1rem;
+          border: 1px solid var(--rule-inverse);
+          border-radius: 20px;
+          background: rgba(255, 255, 255, 0.07);
+          color: rgba(255, 255, 255, 0.82);
+          font-size: 0.78rem;
+          font-weight: 650;
+        }
+
+        .hero-apple__focus-icon {
+          width: 34px;
+          height: 34px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.09);
+          color: white;
+        }
+
+        @media (max-width: 1000px) {
+          .hero-apple__grid {
+            grid-template-columns: 1fr;
+          }
+
+          .hero-apple__main,
+          .hero-apple__side {
+            min-height: auto;
+          }
+
+          .hero-apple__main {
+            min-height: 620px;
+          }
+
+          .hero-apple__side {
+            min-height: 520px;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .hero-apple {
+            min-height: auto;
+            padding-top: 6.5rem;
+            padding-bottom: 3.25rem;
+          }
+
+          .hero-apple__main {
+            min-height: 610px;
+            gap: 3rem;
+          }
+
+          .hero-apple__bottom {
+            grid-template-columns: 1fr;
+            align-items: start;
+          }
+
+          .hero-apple__actions {
+            justify-content: flex-start;
+          }
+
+          .hero-apple__actions :global(a),
+          .hero-apple__actions :global(button) {
+            flex: 1 1 auto;
+          }
+
+          .hero-apple__side {
+            min-height: 500px;
+          }
+
+          .hero-apple__focus-grid {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .hero-apple__focus-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .hero-apple__side {
+            min-height: auto;
+          }
+        }
+      `}</style>
     </section>
   );
 }
