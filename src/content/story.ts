@@ -1,51 +1,75 @@
-// Hikâye perdeleri — PROMPT.md §12
+// Kariyer hikâyesi — kısa, taranabilir ve IT Support odaklı
+
 export type StoryChapter = {
   number: string;
   period: string;
   title: string;
-  paragraphs: string[];
+  summary: string;
+  details: string[];
+  closing: string;
 };
+
+export const storyIntro =
+  "Kariyer yolum tek bir çizgi üzerinde ilerlemedi. Buna rağmen bilgisayar donanımı, sorun giderme ve kullanıcılara yardımcı olma isteğim hiçbir zaman kaybolmadı.";
+
+export const storyToday =
+  "Bugün operasyon disiplinimi, yıllardır geliştirdiğim teknik merak ve uygulamalı deneyimle birleştirerek bilinçli bir IT Support kariyeri kuruyorum.";
 
 export const storyChapters: StoryChapter[] = [
   {
     number: "01",
     period: "2013–2017",
-    title: "Merakla başlayan yol",
-    paragraphs: [
-      "Bilgisayar donanımına olan ilgim lise yıllarında başladı.",
-      "Kendi bilgisayarımda yaşadığım sorunlara çözüm ararken Donanım Haber forumuyla tanıştım. Önce kendi sorularımın cevabını bulmaya çalışıyor, ardından farklı kullanıcıların açtığı konu başlıklarını merak ederek okuyordum.",
-      "Her çözdüğüm sorun yeni bir tecrübeye dönüşüyordu. Bir süre sonra öğrendiklerimi başka insanların bilgisayar sorunlarını çözerken kullanmaya başladım.",
-      "Bilgisayar sökmek, parça değiştirmek, arızanın kaynağını araştırmak ve sistemi yeniden çalışır hâle getirmek benim için yalnızca bir uğraş değil, doğal bir öğrenme biçimi olmuştu.",
+    title: "Merakla başlayan teknik temel",
+    summary:
+      "Bilgisayar donanımına olan ilgim lise yıllarında, kendi sistemimde yaşadığım sorunlara çözüm ararken başladı.",
+    details: [
+      "Donanım Haber forumunda farklı kullanıcıların sorunlarını ve çözüm yollarını takip ettim.",
+      "Bilgisayar sökme, parça değiştirme ve arıza kaynağını araştırma pratiği kazandım.",
+      "Öğrendiklerimi zamanla çevremdeki kullanıcıların sorunlarını çözerken kullanmaya başladım.",
     ],
+    closing:
+      "Teknik sorun çözmek benim için ezberlenen bir işlemden çok, doğal bir öğrenme biçimine dönüştü.",
   },
   {
     number: "02",
     period: "Üniversite yılları",
-    title: "Planladığımdan farklı bir akademik yol",
-    paragraphs: [
-      "Lise döneminde bilgisayar mühendisliği okumayı hayal ediyordum. Üniversite sınavına yeterince hazırlanmadığım için kazandığım ilk bölüm olan Ekonometriye yerleştim.",
-      "Başlangıçta yeniden hazırlanmayı düşünüyordum. Fakat zamanla Ekonometri bölümünü sevdim ve eğitimime bu alanda devam ettim.",
-      "Üniversite yıllarında maddi nedenlerle çalışmam gerekti. Eğitim ve iş hayatını aynı anda yürütmek mezuniyet sürecimi uzattı. Bu dönemde kariyerim teknik alandan uzak görünse de bilgisayarlarla olan bağım devam etti.",
+    title: "Farklı bir akademik yol",
+    summary:
+      "Bilgisayar mühendisliği hedefiyle başlayan planım farklı ilerledi ve Trakya Üniversitesi Ekonometri bölümünde eğitim aldım.",
+    details: [
+      "Eğitim ve çalışma hayatını aynı anda yürütmek zorunda kaldım.",
+      "Teknik alandan uzak görünsem de bilgisayar kurulumları ve sorun giderme çalışmaları devam etti.",
+      "Analitik düşünme, araştırma ve veri odaklı yaklaşımımı güçlendirdim.",
     ],
+    closing:
+      "Akademik yolum değişti; teknik merakım ve bu alanda çalışma isteğim değişmedi.",
   },
   {
     number: "03",
     period: "İş hayatı",
     title: "Operasyonun öğrettiği disiplin",
-    paragraphs: [
-      "Üniversite döneminde başladığım operasyon işi zamanla çalışma hayatımın ana parçasına dönüştü.",
-      "Dijital el terminalleri, stok takip sistemleri, sipariş süreçleri ve yoğun iş temposu içinde çalışmak bana sorumluluk, zaman yönetimi, hata kontrolü ve süreç disiplini kazandırdı.",
-      "Teknik kariyere geçişimi askerlik yükümlülüğüm tamamlanana kadar erteledim. Bu sırada bilgisayar kurulumları, donanım yükseltmeleri, arıza tespitleri, ağ çalışmaları ve uzaktan destek gibi teknik işlerle ilgilenmeye devam ettim.",
+    summary:
+      "Yoğun saha ve operasyon ortamı; sorumluluk, zaman yönetimi, hata kontrolü ve süreç takibi alışkanlığı kazandırdı.",
+    details: [
+      "Dijital el terminalleri ve stok takip sistemleriyle çalıştım.",
+      "Siparişlerin doğru, eksiksiz ve zamanında hazırlanması süreçlerinde görev aldım.",
+      "Farklı ekiplerle koordinasyon kurmayı ve yoğun tempoda düzenli çalışmayı öğrendim.",
     ],
+    closing:
+      "Bugün IT Support alanına taşıdığım en önemli kazanımlardan biri, sorunları sonuca kadar takip etme disiplinidir.",
   },
   {
     number: "04",
     period: "Bugün",
-    title: "Bilinçli bir kariyer geçişi",
-    paragraphs: [
-      "Bugün geçmişte kazandığım çalışma disiplinini, yıllardır geliştirdiğim teknik merak ve uygulamalı deneyimle birleştiriyorum.",
-      "Hedefim ilk kurumsal IT Support deneyimimi kazanmak; bu süreçte teknik yetkinliklerimi sertifikalar, yabancı dil gelişimi ve gerçek iş tecrübesiyle güçlendirmek.",
-      "Kariyerimin yönünü artık net biçimde biliyorum: kullanıcıların teknik sorunlarını anlayan, sistemleri düzenli biçimde yöneten ve çözüm üretirken öğrenmeye devam eden bir BT profesyoneli olmak.",
+    title: "Bilinçli bir IT Support geçişi",
+    summary:
+      "Uygulamalı teknik deneyimimi kurumsal destek süreçleri, kullanıcı iletişimi ve düzenli dokümantasyon yaklaşımıyla tamamlıyorum.",
+    details: [
+      "Donanım, Windows, temel ağ ve uzaktan destek becerilerimi geliştiriyorum.",
+      "Microsoft 365, help desk ve kullanıcı yönetimi süreçlerine odaklanıyorum.",
+      "Çalıştığım kurumun işleyişini öğrenerek zamanla daha fazla sorumluluk almayı hedefliyorum.",
     ],
+    closing:
+      "Hedefim bir kuruma yalnızca katılmak değil; kullanıcıların güvenebileceği kalıcı bir teknik destek noktası hâline gelmek.",
   },
 ];
