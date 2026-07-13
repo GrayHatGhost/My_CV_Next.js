@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   useEffect,
   useId,
@@ -54,8 +53,8 @@ function lockPageScroll() {
   document.body.classList.add("modal-open");
   document.body.style.position = "fixed";
   document.body.style.top = `-${lockedScrollY}px`;
-  document.body.style.left = "0";
   document.body.style.right = "0";
+  document.body.style.left = "0";
   document.body.style.width = "100%";
 }
 
@@ -67,14 +66,14 @@ function unlockPageScroll() {
   document.body.classList.remove("modal-open");
   document.body.style.position = "";
   document.body.style.top = "";
-  document.body.style.left = "";
   document.body.style.right = "";
+  document.body.style.left = "";
   document.body.style.width = "";
 
   window.scrollTo({
     top: lockedScrollY,
     left: 0,
-    behavior: "instant",
+    behavior: "auto",
   });
 }
 
@@ -101,10 +100,9 @@ export default function Dialog({
 }: DialogProps) {
   const [isMounted, setIsMounted] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-
   const generatedId = useId();
-  const panelId = `dialog-${generatedId.replace(/:/g, "")}`;
 
+  const panelId = `dialog-${generatedId.replace(/:/g, "")}`;
   const dialogTokenRef = useRef(Symbol("dialog"));
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -118,8 +116,8 @@ export default function Dialog({
     if (!isOpen || !isMounted) return;
 
     const token = dialogTokenRef.current;
-
     dialogStack.push(token);
+
     previouslyFocusedRef.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -129,7 +127,7 @@ export default function Dialog({
 
     const focusTimer = window.setTimeout(() => {
       closeButtonRef.current?.focus();
-    }, shouldReduceMotion ? 0 : 80);
+    }, shouldReduceMotion ? 0 : 90);
 
     return () => {
       window.clearTimeout(focusTimer);
@@ -170,7 +168,9 @@ export default function Dialog({
         return;
       }
 
-      if (event.key !== "Tab" || !panelRef.current) return;
+      if (event.key !== "Tab" || !panelRef.current) {
+        return;
+      }
 
       const focusableElements = getFocusableElements(
         panelRef.current,
@@ -226,181 +226,171 @@ export default function Dialog({
 
   const panelTransition = shouldReduceMotion
     ? { duration: 0 }
-    : { duration: 0.38, ease };
+    : { duration: 0.42, ease };
 
   const dialog = (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="dialog-root"
-          role="presentation"
-          initial="hidden"
-          animate="visible"
-          exit="exit"
+          className="apple-dialog"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={backdropTransition}
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) {
+              onClose();
+            }
+          }}
         >
-          <motion.button
-            type="button"
-            className="dialog-backdrop"
-            aria-label={`${ariaLabel} penceresini kapat`}
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={backdropTransition}
-          />
-
           <motion.div
             ref={panelRef}
             id={panelId}
+            className={`apple-dialog__panel apple-dialog__panel--${size}`}
             role="dialog"
             aria-modal="true"
             aria-label={ariaLabel}
             tabIndex={-1}
-            className={[
-              "dialog-panel",
-              size === "wide"
-                ? "dialog-panel--wide"
-                : "dialog-panel--default",
-            ].join(" ")}
             initial={
               shouldReduceMotion
-                ? { opacity: 1, scale: 1, y: 0 }
-                : { opacity: 0, scale: 0.985, y: 18 }
+                ? { opacity: 1 }
+                : {
+                    opacity: 0,
+                    y: 28,
+                    scale: 0.985,
+                  }
             }
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
             exit={
               shouldReduceMotion
                 ? { opacity: 0 }
-                : { opacity: 0, scale: 0.99, y: 10 }
+                : {
+                    opacity: 0,
+                    y: 18,
+                    scale: 0.99,
+                  }
             }
             transition={panelTransition}
-            onClick={(event) => event.stopPropagation()}
-            onKeyDown={(
-              event: ReactKeyboardEvent<HTMLDivElement>,
-            ) => {
-              if (
-                event.key === "Escape" &&
-                dialogStack[dialogStack.length - 1] !==
-                  dialogTokenRef.current
-              ) {
-                event.stopPropagation();
-              }
+            onPointerDown={(event) => {
+              event.stopPropagation();
             }}
           >
+            <div
+              className="apple-dialog__mobile-handle"
+              aria-hidden="true"
+            />
+
             <button
               ref={closeButtonRef}
               type="button"
-              className="dialog-close"
+              className="apple-dialog__close"
               onClick={onClose}
-              aria-label={`${ariaLabel} penceresini kapat`}
+              aria-label="Pencereyi kapat"
             >
-              <X size={17} strokeWidth={1.8} aria-hidden="true" />
+              <X
+                size={18}
+                strokeWidth={1.9}
+                aria-hidden="true"
+              />
             </button>
 
-            <div className="dialog-content">{children}</div>
+            <div className="apple-dialog__content">
+              {children}
+            </div>
           </motion.div>
 
           <style jsx global>{`
-            .dialog-root {
+            .apple-dialog {
               position: fixed;
               inset: 0;
-              z-index: 200;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: clamp(0.75rem, 2vw, 1.5rem);
-              isolation: isolate;
-            }
-
-            .dialog-backdrop {
-              position: absolute;
-              inset: 0;
-              width: 100%;
-              height: 100%;
-              border: 0;
-              border-radius: 0;
-              background: rgba(0, 0, 0, 0.84);
-              cursor: default;
-            }
-
-            .dialog-panel {
-              position: relative;
-              z-index: 1;
-              width: 100%;
-              max-height: calc(100dvh - clamp(1.5rem, 4vw, 3rem));
-              overflow: hidden;
-              border: 1px solid var(--rule-strong);
-              border-radius: 24px;
-              background: var(--surface-dark);
-              color: var(--ink);
-              box-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
+              z-index: 300;
+              display: grid;
+              place-items: center;
+              padding: clamp(0.8rem, 2.6vw, 2rem);
+              background: rgba(22, 22, 26, 0.42);
               overscroll-behavior: contain;
             }
 
-            .dialog-panel--default {
-              max-width: 760px;
+            @supports (backdrop-filter: blur(8px)) {
+              .apple-dialog {
+                backdrop-filter: blur(8px) saturate(0.92);
+              }
             }
 
-            .dialog-panel--wide {
-              max-width: min(1280px, calc(100vw - 3rem));
+            .apple-dialog__panel {
+              position: relative;
+              width: min(100%, 900px);
+              max-height: calc(100dvh - clamp(1.6rem, 5.2vw, 4rem));
+              overflow: hidden;
+              border: 1px solid rgba(255, 255, 255, 0.92);
+              border-radius: 36px;
+              background: var(--page);
+              box-shadow:
+                0 8px 22px rgba(17, 17, 20, 0.08),
+                0 42px 120px rgba(17, 17, 20, 0.24);
+              color: var(--ink);
+              outline: none;
             }
 
-            .dialog-content {
-              width: 100%;
-              height: 100%;
+            .apple-dialog__panel--wide {
+              width: min(100%, 1240px);
+            }
+
+            .apple-dialog__content {
               max-height: inherit;
               overflow-x: hidden;
               overflow-y: auto;
               overscroll-behavior: contain;
               scrollbar-gutter: stable;
-              -webkit-overflow-scrolling: touch;
             }
 
-            .dialog-close {
+            .apple-dialog__close {
               position: absolute;
               top: 1rem;
               right: 1rem;
-              z-index: 30;
+              z-index: 20;
               width: 42px;
               height: 42px;
               display: inline-flex;
               align-items: center;
               justify-content: center;
-              border: 1px solid var(--rule-strong);
-              border-radius: 999px;
-              background: rgba(8, 8, 8, 0.94);
-              color: var(--ink-2);
-              box-shadow: none;
-              transition:
-                color 0.2s var(--ease),
-                background-color 0.2s var(--ease),
-                border-color 0.2s var(--ease),
-                transform 0.2s var(--ease);
-            }
-
-            .dialog-close:hover,
-            .dialog-close:focus-visible {
-              border-color: rgba(255, 255, 255, 0.5);
-              background: #151515;
+              border: 1px solid rgba(17, 17, 20, 0.08);
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.92);
               color: var(--ink);
-              transform: scale(1.04);
+              box-shadow: var(--shadow-sm);
+              transition:
+                transform 0.22s var(--ease),
+                background-color 0.22s var(--ease),
+                border-color 0.22s var(--ease);
             }
 
-            .dialog-close:active {
-              transform: scale(0.96);
+            .apple-dialog__close:hover {
+              transform: rotate(4deg) scale(1.04);
+              border-color: rgba(17, 17, 20, 0.14);
+              background: #ffffff;
+            }
+
+            .apple-dialog__mobile-handle {
+              display: none;
             }
 
             @media (max-width: 767px) {
-              .dialog-root {
-                align-items: stretch;
+              .apple-dialog {
+                display: block;
                 padding: 0;
+                background: var(--page);
+                backdrop-filter: none !important;
               }
 
-              .dialog-panel,
-              .dialog-panel--default,
-              .dialog-panel--wide {
+              .apple-dialog__panel,
+              .apple-dialog__panel--default,
+              .apple-dialog__panel--wide {
                 width: 100%;
-                max-width: none;
                 height: 100dvh;
                 max-height: 100dvh;
                 border: 0;
@@ -408,34 +398,35 @@ export default function Dialog({
                 box-shadow: none;
               }
 
-              .dialog-backdrop {
-                background: #050505;
+              .apple-dialog__close {
+                top: 0.78rem;
+                right: 0.8rem;
+                width: 40px;
+                height: 40px;
+                box-shadow: var(--shadow-xs);
               }
 
-              .dialog-close {
-                position: fixed;
-                top: max(0.85rem, env(safe-area-inset-top));
-                right: max(0.85rem, env(safe-area-inset-right));
-                width: 44px;
-                height: 44px;
-                background: #0d0d0d;
-              }
-
-              .dialog-content {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-                scrollbar-gutter: auto;
+              .apple-dialog__mobile-handle {
+                position: absolute;
+                top: 0.58rem;
+                left: 50%;
+                z-index: 20;
+                width: 38px;
+                height: 4px;
+                display: block;
+                border-radius: 999px;
+                background: rgba(17, 17, 20, 0.14);
+                transform: translateX(-50%);
+                pointer-events: none;
               }
             }
 
             @media (prefers-reduced-motion: reduce) {
-              .dialog-close {
+              .apple-dialog__close {
                 transition: none;
               }
 
-              .dialog-close:hover,
-              .dialog-close:focus-visible,
-              .dialog-close:active {
+              .apple-dialog__close:hover {
                 transform: none;
               }
             }
