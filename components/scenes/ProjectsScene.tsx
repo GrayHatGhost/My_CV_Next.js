@@ -1,121 +1,307 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import {
+  motion,
+  useReducedMotion,
+} from "framer-motion";
+import {
+  ArrowUpRight,
+  ImageIcon,
+} from "lucide-react";
 
-import { projects, type Project } from "@/src/content/projects";
+import {
+  projects,
+  type Project,
+} from "@/src/content/projects";
 
 const ProjectModal = dynamic(
   () => import("@/components/projects/ProjectModal"),
   {
     ssr: false,
+    loading: () => null,
   },
 );
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-export default function ProjectsScene() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+function Reveal({
+  children,
+  delay = 0,
+  className,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
   const shouldReduceMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      className={className}
+      initial={
+        shouldReduceMotion
+          ? { opacity: 1, y: 0 }
+          : { opacity: 0, y: 24 }
+      }
+      whileInView={{
+        opacity: 1,
+        y: 0,
+      }}
+      viewport={{
+        once: true,
+        amount: 0.15,
+      }}
+      transition={
+        shouldReduceMotion
+          ? { duration: 0 }
+          : {
+              duration: 0.7,
+              delay,
+              ease,
+            }
+      }
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export default function ProjectsScene() {
+  const [selectedProject, setSelectedProject] =
+    useState<Project | null>(null);
+
+  const [failedCovers, setFailedCovers] = useState<
+    Set<string>
+  >(() => new Set());
+
+  const markCoverAsFailed = (projectId: string) => {
+    setFailedCovers((current) => {
+      const next = new Set(current);
+      next.add(projectId);
+      return next;
+    });
+  };
 
   return (
     <>
       <section
+        className="projects-apple page-section"
         aria-labelledby="projects-title"
-        className="projects-shell"
-        style={{
-          position: "relative",
-          paddingTop: "clamp(7rem, 13vw, 12rem)",
-          paddingBottom: "clamp(7rem, 13vw, 12rem)",
-        }}
       >
         <div className="site-wrap">
-          <motion.header
-            initial={
-              shouldReduceMotion
-                ? { opacity: 1, y: 0 }
-                : { opacity: 0, y: 24 }
-            }
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : { duration: 0.72, ease }
-            }
-            className="section-intro"
-            style={{
-              marginBottom: "clamp(4rem, 9vw, 8rem)",
-            }}
-          >
-            <p
-              className="t-label"
-              style={{
-                marginBottom: "1.4rem",
-              }}
-            >
-              DİJİTAL PROJELER
-            </p>
+          <div className="projects-apple__intro-grid">
+            <Reveal className="projects-apple__intro-main">
+              <article className="apple-card projects-apple__intro-card">
+                <div>
+                  <p className="card-eyebrow">
+                    DİJİTAL PROJELER
+                  </p>
 
-            <h2
-              id="projects-title"
-              className="t-section"
-              style={{
-                maxWidth: "15ch",
-              }}
-            >
-              İhtiyacı anlamak,
-              <span
-                style={{
-                  display: "block",
-                  color: "var(--ink-3)",
-                }}
-              >
-                çalışan ürün çıkarmak.
-              </span>
-            </h2>
+                  <h2
+                    id="projects-title"
+                    className="projects-apple__title"
+                  >
+                    İhtiyacı anlamak,
+                    <span>çalışan ürün çıkarmak.</span>
+                  </h2>
+                </div>
 
-            <p
-              className="t-body"
-              style={{
-                maxWidth: "55ch",
-                marginTop: "1.6rem",
-                fontSize: "clamp(1.05rem, 1.5vw, 1.22rem)",
-              }}
-            >
-              İhtiyaç analizi, yapı planlama, test, yayın ve bakım
-              süreçlerini üstlendiğim seçili dijital çalışmalar.
-            </p>
-          </motion.header>
+                <p className="projects-apple__intro-copy">
+                  Bir talebi kullanılabilir sayfalara,
+                  yönetilebilir içerik yapılarına ve çalışan
+                  otomasyon akışlarına dönüştürdüğüm seçili
+                  projeler.
+                </p>
+              </article>
+            </Reveal>
 
-          <div
-            className="project-list"
-            style={{
-              borderBottom: "1px solid var(--rule)",
-            }}
-          >
+            <Reveal
+              delay={0.08}
+              className="projects-apple__intro-side"
+            >
+              <aside className="apple-card apple-card--dark projects-apple__stat-card">
+                <div>
+                  <p className="card-eyebrow">
+                    SEÇİLİ ÇALIŞMALAR
+                  </p>
+
+                  <p className="projects-apple__stat-number">
+                    {String(projects.length).padStart(2, "0")}
+                  </p>
+                </div>
+
+                <p className="projects-apple__stat-copy">
+                  Web siteleri, yönetim panelleri ve veri
+                  otomasyonu. Her projede ihtiyaç analizi,
+                  test, yayın ve bakım sorumluluğu.
+                </p>
+              </aside>
+            </Reveal>
+          </div>
+
+          <div className="projects-apple__grid">
             {projects.map((project, index) => (
-              <ProjectRow
+              <Reveal
                 key={project.id}
-                project={project}
-                index={index}
-                onOpen={() => setSelectedProject(project)}
-                shouldReduceMotion={Boolean(shouldReduceMotion)}
-              />
+                delay={index * 0.07}
+                className={[
+                  "projects-apple__item",
+                  index === 0
+                    ? "projects-apple__item--featured"
+                    : "",
+                  index === projects.length - 1
+                    ? "projects-apple__item--wide"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                <ProjectCard
+                  project={project}
+                  featured={index === 0}
+                  wide={index === projects.length - 1}
+                  imageFailed={failedCovers.has(project.id)}
+                  onImageError={() =>
+                    markCoverAsFailed(project.id)
+                  }
+                  onOpen={() =>
+                    setSelectedProject(project)
+                  }
+                />
+              </Reveal>
             ))}
           </div>
         </div>
 
         <style jsx>{`
-          .project-list {
-            width: 100%;
+          .projects-apple {
+            overflow: clip;
           }
 
-          @media (max-width: 767px) {
-            .project-list {
-              border-bottom: 0 !important;
+          .projects-apple__intro-grid {
+            display: grid;
+            grid-template-columns:
+              minmax(0, 1.4fr)
+              minmax(280px, 0.6fr);
+            gap: var(--grid-gap);
+            align-items: stretch;
+          }
+
+          .projects-apple__intro-main,
+          .projects-apple__intro-side {
+            min-width: 0;
+            height: 100%;
+          }
+
+          .projects-apple__intro-card,
+          .projects-apple__stat-card {
+            min-height: 440px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 3rem;
+          }
+
+          .projects-apple__title {
+            max-width: 12ch;
+            margin-top: 1rem;
+            color: var(--ink);
+            font-size: var(--f-section);
+            font-weight: 850;
+            letter-spacing: -0.062em;
+            line-height: 0.95;
+            text-wrap: balance;
+          }
+
+          .projects-apple__title span {
+            display: block;
+            color: var(--ink-3);
+          }
+
+          .projects-apple__intro-copy {
+            max-width: 55ch;
+            color: var(--ink-2);
+            font-size: var(--f-body);
+            line-height: 1.7;
+          }
+
+          .projects-apple__stat-number {
+            margin-top: 0.7rem;
+            color: white;
+            font-size: clamp(5rem, 9vw, 8.5rem);
+            font-weight: 850;
+            letter-spacing: -0.08em;
+            line-height: 0.82;
+          }
+
+          .projects-apple__stat-copy {
+            max-width: 33ch;
+            color: var(--ink-inverse-2);
+            font-size: 0.95rem;
+            line-height: 1.68;
+          }
+
+          .projects-apple__grid {
+            display: grid;
+            grid-template-columns: repeat(
+              12,
+              minmax(0, 1fr)
+            );
+            gap: var(--grid-gap);
+            margin-top: var(--grid-gap);
+          }
+
+          .projects-apple__item {
+            min-width: 0;
+            grid-column: span 5;
+          }
+
+          .projects-apple__item--featured {
+            grid-column: span 7;
+          }
+
+          .projects-apple__item--wide {
+            grid-column: 1 / -1;
+          }
+
+          @media (max-width: 980px) {
+            .projects-apple__intro-grid {
+              grid-template-columns: 1fr;
+            }
+
+            .projects-apple__intro-card,
+            .projects-apple__stat-card {
+              min-height: 400px;
+            }
+
+            .projects-apple__item,
+            .projects-apple__item--featured {
+              grid-column: span 6;
+            }
+
+            .projects-apple__item--wide {
+              grid-column: 1 / -1;
+            }
+          }
+
+          @media (max-width: 720px) {
+            .projects-apple__intro-card,
+            .projects-apple__stat-card {
+              min-height: 390px;
+            }
+
+            .projects-apple__grid {
+              grid-template-columns: 1fr;
+            }
+
+            .projects-apple__item,
+            .projects-apple__item--featured,
+            .projects-apple__item--wide {
+              grid-column: 1;
             }
           }
         `}</style>
@@ -132,219 +318,283 @@ export default function ProjectsScene() {
   );
 }
 
-function ProjectRow({
+function ProjectCard({
   project,
-  index,
+  featured,
+  wide,
+  imageFailed,
+  onImageError,
   onOpen,
-  shouldReduceMotion,
 }: {
   project: Project;
-  index: number;
+  featured: boolean;
+  wide: boolean;
+  imageFailed: boolean;
+  onImageError: () => void;
   onOpen: () => void;
-  shouldReduceMotion: boolean;
 }) {
+  const cover = project.images[0];
+  const hasCover = Boolean(cover?.src) && !imageFailed;
+
   return (
-    <motion.button
+    <button
       type="button"
+      className={[
+        "apple-card",
+        "apple-card--interactive",
+        "project-card",
+        featured ? "project-card--featured" : "",
+        wide ? "project-card--wide" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onClick={onOpen}
-      aria-haspopup="dialog"
-      aria-label={`${project.title} proje detaylarını aç`}
-      className="project-editorial-row"
-      initial={
-        shouldReduceMotion
-          ? { opacity: 1, y: 0 }
-          : { opacity: 0, y: 22 }
-      }
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={
-        shouldReduceMotion
-          ? { duration: 0 }
-          : {
-              duration: 0.66,
-              delay: index * 0.06,
-              ease,
-            }
-      }
+      aria-label={`${project.title} projesini incele`}
     >
-      <span className="project-editorial-row__number">
-        {project.number}
-      </span>
+      <div className="project-card__media">
+        {hasCover ? (
+          <Image
+            src={cover.src}
+            alt={cover.alt}
+            fill
+            sizes={
+              wide
+                ? "(max-width: 720px) 100vw, 88vw"
+                : "(max-width: 720px) 100vw, 52vw"
+            }
+            className="project-card__image"
+            onError={onImageError}
+          />
+        ) : (
+          <div className="project-card__fallback">
+            <ImageIcon
+              size={28}
+              strokeWidth={1.6}
+              aria-hidden="true"
+            />
+            <span>Proje görseli eklenecek</span>
+          </div>
+        )}
 
-      <span className="project-editorial-row__content">
-        <span className="project-editorial-row__category">
-          {project.category}
+        <span className="project-card__number">
+          {project.number}
         </span>
+      </div>
 
-        <span className="project-editorial-row__title">
-          {project.title}
+      <div className="project-card__content">
+        <div>
+          <div className="project-card__categories">
+            {project.category
+              .split(" · ")
+              .slice(0, 3)
+              .map((category) => (
+                <span key={category}>{category}</span>
+              ))}
+          </div>
+
+          <h3 className="project-card__title">
+            {project.title}
+          </h3>
+
+          <p className="project-card__copy">
+            {project.shortDescription}
+          </p>
+        </div>
+
+        <span className="project-card__action">
+          Projeyi incele
+          <ArrowUpRight
+            size={18}
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
         </span>
-
-        <span className="project-editorial-row__description">
-          {project.shortDescription}
-        </span>
-      </span>
-
-      <span
-        className="project-editorial-row__action"
-        aria-hidden="true"
-      >
-        <span>Projeyi incele</span>
-        <ArrowUpRight size={20} />
-      </span>
+      </div>
 
       <style jsx>{`
-        .project-editorial-row {
+        .project-card {
           width: 100%;
+          height: 100%;
+          min-height: 600px;
           display: grid;
-          grid-template-columns: 4rem minmax(0, 1fr) auto;
-          gap: clamp(1.5rem, 4vw, 4rem);
-          align-items: start;
-          padding-top: clamp(2.5rem, 5vw, 4.5rem);
-          padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
-          border-top: 1px solid var(--rule);
-          color: var(--ink);
+          grid-template-rows: minmax(290px, 1.1fr) auto;
+          padding: 0;
           text-align: left;
-          background: transparent;
-          transition:
-            background-color 0.3s var(--ease),
-            padding-inline 0.3s var(--ease);
+          cursor: pointer;
         }
 
-        .project-editorial-row:hover,
-        .project-editorial-row:focus-visible {
-          padding-inline: clamp(0.75rem, 1.4vw, 1.25rem);
-          background: rgba(255, 255, 255, 0.025);
+        .project-card--featured {
+          min-height: 670px;
         }
 
-        .project-editorial-row__number {
+        .project-card--wide {
+          min-height: 510px;
+          grid-template-columns: minmax(0, 1.15fr) minmax(
+              320px,
+              0.85fr
+            );
+          grid-template-rows: 1fr;
+        }
+
+        .project-card__media {
+          position: relative;
+          min-height: 0;
+          overflow: hidden;
+          margin: 0.62rem 0.62rem 0;
+          border-radius: calc(var(--radius-lg) - 8px);
+          background:
+            linear-gradient(
+              145deg,
+              #eeeeF1,
+              #e3e3e7
+            );
+        }
+
+        .project-card__image {
+          object-fit: cover;
+          object-position: top center;
+          transition: transform 0.7s var(--ease);
+        }
+
+        .project-card:hover .project-card__image {
+          transform: scale(1.025);
+        }
+
+        .project-card__fallback {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.8rem;
           color: var(--ink-3);
-          font-size: 0.6875rem;
+          font-size: 0.75rem;
           font-weight: 650;
-          letter-spacing: 0.14em;
-          line-height: 1.4;
-          transition: color 0.3s var(--ease);
         }
 
-        .project-editorial-row__content {
-          display: grid;
+        .project-card__number {
+          position: absolute;
+          top: 1rem;
+          left: 1rem;
+          z-index: 2;
+          min-width: 40px;
+          height: 40px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid rgba(255, 255, 255, 0.72);
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--ink);
+          box-shadow: var(--shadow-xs);
+          font-size: 0.64rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+        }
+
+        .project-card__content {
           min-width: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 2rem;
+          padding: clamp(1.45rem, 2.6vw, 2.25rem);
         }
 
-        .project-editorial-row__category {
-          margin-bottom: 1rem;
+        .project-card__categories {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.42rem;
+        }
+
+        .project-card__categories span {
+          display: inline-flex;
+          padding: 0.38rem 0.62rem;
+          border-radius: 999px;
+          background: var(--surface-2);
           color: var(--ink-3);
-          font-size: 0.6875rem;
-          font-weight: 650;
-          letter-spacing: 0.12em;
-          line-height: 1.5;
+          font-size: 0.6rem;
+          font-weight: 740;
+          letter-spacing: 0.08em;
           text-transform: uppercase;
         }
 
-        .project-editorial-row__title {
-          max-width: 24ch;
+        .project-card__title {
+          max-width: 18ch;
+          margin-top: 1rem;
           color: var(--ink);
-          font-family:
-            var(--font-display), var(--font-geist), Georgia, serif;
-          font-size: clamp(1.8rem, 3.3vw, 3.7rem);
-          font-weight: 700;
-          letter-spacing: -0.04em;
-          line-height: 1.03;
-          transition: transform 0.35s var(--ease);
+          font-size: clamp(1.65rem, 2.8vw, 2.85rem);
+          font-weight: 820;
+          letter-spacing: -0.052em;
+          line-height: 1.02;
+          text-wrap: balance;
         }
 
-        .project-editorial-row__description {
-          max-width: 68ch;
-          margin-top: 1.25rem;
-          color: var(--ink-3);
-          font-size: 0.95rem;
-          line-height: 1.75;
-          transition: color 0.3s var(--ease);
+        .project-card__copy {
+          max-width: 58ch;
+          margin-top: 0.9rem;
+          color: var(--ink-2);
+          font-size: 0.9rem;
+          line-height: 1.65;
         }
 
-        .project-editorial-row__action {
+        .project-card__action {
           display: inline-flex;
           align-items: center;
-          gap: 0.65rem;
-          align-self: center;
-          color: var(--ink-3);
-          font-size: 0.8125rem;
-          font-weight: 560;
-          white-space: nowrap;
-          transition:
-            color 0.3s var(--ease),
-            transform 0.3s var(--ease);
+          gap: 0.48rem;
+          color: var(--ink);
+          font-size: 0.75rem;
+          font-weight: 740;
         }
 
-        .project-editorial-row:hover
-          .project-editorial-row__number,
-        .project-editorial-row:focus-visible
-          .project-editorial-row__number,
-        .project-editorial-row:hover
-          .project-editorial-row__description,
-        .project-editorial-row:focus-visible
-          .project-editorial-row__description,
-        .project-editorial-row:hover
-          .project-editorial-row__action,
-        .project-editorial-row:focus-visible
-          .project-editorial-row__action {
-          color: var(--ink-2);
+        .project-card__action :global(svg) {
+          transition: transform 0.3s var(--ease);
         }
 
-        .project-editorial-row:hover
-          .project-editorial-row__title,
-        .project-editorial-row:focus-visible
-          .project-editorial-row__title {
-          transform: translateX(8px);
+        .project-card:hover
+          .project-card__action
+          :global(svg) {
+          transform: translate(3px, -3px);
         }
 
-        .project-editorial-row:hover
-          .project-editorial-row__action,
-        .project-editorial-row:focus-visible
-          .project-editorial-row__action {
-          transform: translate(4px, -4px);
-        }
-
-        @media (max-width: 767px) {
-          .project-editorial-row {
-            grid-template-columns: 2.25rem minmax(0, 1fr);
-            gap: 1rem;
-            padding-top: 2.5rem;
-            padding-bottom: 2.5rem;
+        @media (max-width: 980px) {
+          .project-card,
+          .project-card--featured {
+            min-height: 600px;
           }
 
-          .project-editorial-row:hover,
-          .project-editorial-row:focus-visible {
-            padding-inline: 0;
-            background: transparent;
+          .project-card--wide {
+            min-height: 500px;
+          }
+        }
+
+        @media (max-width: 720px) {
+          .project-card,
+          .project-card--featured,
+          .project-card--wide {
+            min-height: 560px;
+            grid-template-columns: 1fr;
+            grid-template-rows: minmax(260px, 1fr) auto;
           }
 
-          .project-editorial-row__action {
-            grid-column: 2;
-            margin-top: 1.5rem;
-            justify-self: start;
+          .project-card__media {
+            min-height: 270px;
+          }
+        }
+
+        @media (hover: none), (pointer: coarse) {
+          .project-card:hover .project-card__image {
+            transform: none;
           }
 
-          .project-editorial-row:hover
-            .project-editorial-row__title,
-          .project-editorial-row:focus-visible
-            .project-editorial-row__title,
-          .project-editorial-row:hover
-            .project-editorial-row__action,
-          .project-editorial-row:focus-visible
-            .project-editorial-row__action {
+          .project-card:hover
+            .project-card__action
+            :global(svg) {
             transform: none;
           }
         }
-
-        @media (prefers-reduced-motion: reduce) {
-          .project-editorial-row,
-          .project-editorial-row__title,
-          .project-editorial-row__action {
-            transition: none;
-          }
-        }
       `}</style>
-    </motion.button>
+    </button>
   );
 }
